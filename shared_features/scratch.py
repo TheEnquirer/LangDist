@@ -4,15 +4,19 @@ import rich
 from rich import print, inspect
 from rich.progress import track
 from collections import defaultdict
+from geopy.distance import geodesic
+import itertools
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 DATASET_PATH = "/Users/huxley/dataset_storage/langdist_data/cldf-datasets-wals-878ea47/cldf/StructureDataset-metadata.json"
 wals = Dataset.from_metadata(DATASET_PATH)
 
+###############################
 # TODO
 # * use TF-IDF to weight the params
 # * wrap it all in a class with a method to calculate similarity between languages
-
 ###############################
 
 # for c in wals.components:
@@ -58,7 +62,7 @@ overlap = set(eng_params) & set(fre_params)
 
 def calc_overlap(a, b):
     """
-    find the number of overlapping features between languages with ids a and b
+    find the normalized number of overlapping features between languages with ids a and b
     @param a: str
     @param b: str
     @return: similarity: float, number of shared parameters to compare with: int
@@ -91,5 +95,46 @@ def get_top_langs(n):
     lang_params = [(k, len(v)) for k, v in langs.items()]
     lang_params.sort(key=lambda x: x[1], reverse=True)
     return lang_params[:n]
+
+
+def distance_metric(similarity_metric, languages):
+    """
+    compares the similarity_metric to the geographical distance between languages
+    @param similarity_metric: function, the similarity metric to use
+    @param languages: list[str], the languages to compare
+    """
+
+    l_table = wals.objects('LanguageTable')
+
+    distances = []
+    sims = []
+
+    for a, b in itertools.combinations(languages, 2):
+        # d = geodesic(l_table[a].lonlat[::-1], l_table[b].lonlat[::-1]).km
+
+        # TODO should this be squared? cus exponential falloff
+        d = geodesic(l_table[a].lonlat[::-1], l_table[b].lonlat[::-1]).km ** 0.5
+        s, n = similarity_metric(a, b)
+
+        distances.append(d)
+        sims.append(1-s)
+
+
+    # find the correlation between the distances and the similarities
+    correlation = np.corrcoef(distances, sims)[0, 1]
+
+    # make a scatter plot
+    plt.scatter(distances, sims)
+    plt.xlabel("Distance (km)")
+    plt.ylabel("Dis-Similarity")
+
+    # and a line of best fit
+    m, b = np.polyfit(distances, sims, 1)
+    plt.plot(distances, m*np.array(distances) + b, color="red")
+
+
+    plt.show()
+
+    return correlation
 
 
