@@ -15,7 +15,7 @@ wals = Dataset.from_metadata(DATASET_PATH)
 
 ###############################
 # TODO
-# * use TF-IDF to weight the params
+# * [x] use TF-IDF to weight the params
 # * wrap it all in a class with a method to calculate similarity between languages
 ###############################
 
@@ -138,7 +138,7 @@ def similarity(a, b):
         # where the probability of a given parameter being in a given state is 1 - weight
 
         normalization += sum([weights[param][state] * (1 - weights[param][state]) for state in weights[param].keys()])
-
+        # normalization += 1
 
     # similarity /= len(overlap)
     similarity /= normalization
