@@ -132,6 +132,17 @@ class SharedFeatures:
         lang_params.sort(key=lambda x: x[1], reverse=True)
         return lang_params[:n]
 
+    def geographical_distance(self, a, b):
+        """
+        find the geographical distance between languages with ids a and b
+        @param a: str
+        @param b: str
+        @return: float, distance in km
+        """
+
+        l_table = self.wals.objects('LanguageTable')
+
+        return geodesic(l_table[a].lonlat[::-1], l_table[b].lonlat[::-1]).km
 
     def distance_metric(self, similarity_metric, languages, plot=False):
         """
@@ -139,8 +150,6 @@ class SharedFeatures:
         @param similarity_metric: function, the similarity metric to use
         @param languages: list[str], the languages to compare
         """
-
-        print("update it")
 
         l_table = self.wals.objects('LanguageTable')
 
