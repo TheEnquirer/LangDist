@@ -9,10 +9,8 @@ import itertools
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-# import warnings
 import logging
 logging.basicConfig(level=logging.INFO)
-
 
 ###############################
 # TODO
@@ -92,7 +90,7 @@ class SharedFeatures:
         """
 
         if self.langs[a] == [] or self.langs[b] == []:
-            raise ValueError("Language not found for language")
+            raise ValueError("Language not found")
 
         overlap = set([x.parameter for x in self.langs[a]]) & set([x.parameter for x in self.langs[b]])
 
@@ -142,6 +140,8 @@ class SharedFeatures:
         @param languages: list[str], the languages to compare
         """
 
+        print("update it")
+
         l_table = self.wals.objects('LanguageTable')
 
         distances = []
@@ -151,12 +151,14 @@ class SharedFeatures:
             # d = geodesic(l_table[a].lonlat[::-1], l_table[b].lonlat[::-1]).km
 
             # TODO should this be squared? cus exponential falloff
-            d = geodesic(l_table[a].lonlat[::-1], l_table[b].lonlat[::-1]).km ** 0.5
-            s, n = similarity_metric(a, b)
+            try:
+                d = geodesic(l_table[a].lonlat[::-1], l_table[b].lonlat[::-1]).km ** 0.5
+                s, n = similarity_metric(a, b)
 
-            distances.append(d)
-            sims.append(1-s)
-
+                distances.append(d)
+                sims.append(1-s)
+            except:
+                logging.error(f"Error for {a} and {b}")
 
         # find the correlation between the distances and the similarities
         correlation = np.corrcoef(distances, sims)[0, 1]
@@ -179,9 +181,9 @@ class SharedFeatures:
 if __name__ == "__main__":
     sf = SharedFeatures()
 
-    # v = sf.distance_metric(sf.similarity, [x[0] for x in sf.get_most_featured_langs(15)], plot=False)
-    # print(v)
+    v = sf.distance_metric(sf.similarity, [x[0] for x in sf.get_most_featured_langs(15)], plot=True)
+    print(v)
 
-    print([(*x , sf.code_to_name(x[0])) for x in sf.get_most_featured_langs(15)])
+    # print([(*x , sf.code_to_name(x[0])) for x in sf.get_most_featured_langs(15)])
 
 
