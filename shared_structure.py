@@ -6,6 +6,8 @@ from rich.progress import track
 import edist.ted as ted
 import edist.tree_edits as tree_edits
 import itertools
+import time
+import functools
 import logging
 logging.basicConfig(level=logging.INFO)
 
@@ -43,11 +45,13 @@ class SharedStructure:
             ("pl_pud-ud-test.conllu", "pol", "Polish"),
         ]
 
+    @functools.cache
     def get_sentences(self, path):
         with open(path, "r", encoding="utf-8") as f:
             data = f.read()
             return parse_tree(data)
 
+    @functools.cache
     def code_to_file(self, code):
         for file, c, lang in self.lang_mapping:
             if c == code:
@@ -55,6 +59,7 @@ class SharedStructure:
 
         raise ValueError("Language not found")
 
+    # @functools.cache
     def conllu_to_tree(self, sent):
         """
         @param sent: a TokenTree object representing the root of a sentence
@@ -72,7 +77,10 @@ class SharedStructure:
             @param parent_idx: index of the parent node in the nodes list.
             """
             current_idx = len(nodes)
+
             nodes.append(node.token['upos']) # TODO do we want `deprel`? or some combo?
+            # nodes.append(node.token['deprel']) # TODO do we want `deprel`? or some combo?
+
             if parent_idx is not None:
                 adj[parent_idx].append(current_idx)
             adj.append([])  # initialize children list for the current node
@@ -85,10 +93,12 @@ class SharedStructure:
 
         return nodes, adj
 
+    @functools.cache
     def similarity(self, a, b):
         """
         a and b are 3 letter language codes, like "eng" or "spa"
         """
+
         # load the file
         # parse all the sentences into trees
         # loop through and find pairwise edit distance
@@ -140,4 +150,7 @@ if __name__ == "__main__":
     ss = SharedStructure()
 
     print(ss.similarity("eng", "spa"))
+    for a, b in track(list(itertools.combinations([c for _, c, _ in ss.lang_mapping], 2))):
+        print(a, b, ss.similarity(a, b))
+
 

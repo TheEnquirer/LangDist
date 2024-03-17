@@ -9,6 +9,7 @@ import itertools
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+import functools
 import logging
 logging.basicConfig(level=logging.INFO)
 
@@ -35,6 +36,7 @@ class SharedFeatures:
 
         logging.info(f"Initialzed SharedFeatures similarity with {len(self.langs)} languages in {time.time() - start:.2f} seconds")
 
+    @functools.cache
     def generate_feature_weights(self):
         """
         feature weights are defined as:
@@ -81,6 +83,7 @@ class SharedFeatures:
 
         return weights
 
+    @functools.cache
     def similarity(self, a, b):
         """
         find the normalized weighted number of overlapping features between languages with ids a and b
@@ -124,6 +127,7 @@ class SharedFeatures:
         return similarity, len(overlap)
 
 
+    @functools.cache
     def get_most_featured_langs(self, n):
         """
         get the top n languages with the most parameters
@@ -132,6 +136,7 @@ class SharedFeatures:
         lang_params.sort(key=lambda x: x[1], reverse=True)
         return lang_params[:n]
 
+    @functools.cache
     def geographical_distance(self, a, b):
         """
         find the geographical distance between languages with ids a and b
@@ -184,6 +189,7 @@ class SharedFeatures:
 
         return correlation
 
+    @functools.cache
     def code_to_name(self, code):
         return self.wals.objects('LanguageTable')[code].name
 
