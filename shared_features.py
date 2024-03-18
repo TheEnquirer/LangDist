@@ -197,8 +197,11 @@ if __name__ == "__main__":
     sf = SharedFeatures()
 
     v = sf.distance_metric(sf.similarity, [x[0] for x in sf.get_most_featured_langs(15)], plot=True)
-    print(v)
+    # print(v)
 
     # print([(*x , sf.code_to_name(x[0])) for x in sf.get_most_featured_langs(15)])
+
+    # v = sf.similarity("eng", "spa")
+    # print(v)
 
 

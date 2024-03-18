@@ -17,6 +17,8 @@ class SharedStructure:
     def __init__(self, dataset_path = DATA_DIR):
 
         self.NORMALIZATION_CONSTANT = 27
+        # self.NORMALIZATION_CONSTANT = 1.08
+
         self.dataset_path = dataset_path
 
         # TODO this should probably go somewhere else
@@ -113,11 +115,32 @@ class SharedStructure:
         cumulative_ted = 0
 
         for idx, tree in enumerate(a_trees):
+
+            # normalize by avg num nodes
+            # n = (len(a_trees[idx][0]) + len(b_trees[idx][0])) / 2
+            # cumulative_ted += ted.standard_ted(*a_trees[idx], *b_trees[idx]) / n
+
             cumulative_ted += ted.standard_ted(*a_trees[idx], *b_trees[idx])
 
         avg_ted = cumulative_ted / len(a_trees)
 
         return np.exp(-(1/self.NORMALIZATION_CONSTANT) * avg_ted), avg_ted
+
+    def get_max_raw_editdistance(self):
+        # loop through all pairs of languages
+        # find the similarity
+        # return the max
+
+        max_raw = 0
+        max_pair = None
+
+        for a, b in track(list(itertools.combinations([c for _, c, _ in self.lang_mapping], 2))):
+            normalized, raw = self.similarity(a, b)
+            if raw > max_raw:
+                max_raw = raw
+                max_pair = (a, b)
+
+        return max_raw, max_pair
 
 # def get_max_similarity():
 #     # loop through all pairs of languages
@@ -149,8 +172,17 @@ class SharedStructure:
 if __name__ == "__main__":
     ss = SharedStructure()
 
-    print(ss.similarity("eng", "spa"))
-    for a, b in track(list(itertools.combinations([c for _, c, _ in ss.lang_mapping], 2))):
-        print(a, b, ss.similarity(a, b))
+    # print(ss.similarity("eng", "spa"))
+
+    # for a, b in track(list(itertools.combinations([c for _, c, _ in ss.lang_mapping], 2))):
+    #     print(a, b, ss.similarity(a, b))
+
+    # print the similarity for all languages w. eng
+
+    for lang in track([c for _, c, _ in ss.lang_mapping]):
+        print(lang, ss.similarity("eng", lang))
+
+    # print(ss.get_max_raw_editdistance())
+
 
 

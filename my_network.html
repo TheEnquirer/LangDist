@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "id": "eng", "label": "English", "shape": "dot"}, {"color": "#97c2fc", "id": "fre", "label": "French", "shape": "dot"}, {"color": "#97c2fc", "id": "ger", "label": "German", "shape": "dot"}, {"color": "#97c2fc", "id": "rus", "label": "Russian", "shape": "dot"}, {"color": "#97c2fc", "id": "fin", "label": "Finnish", "shape": "dot"}, {"color": "#97c2fc", "id": "grk", "label": "Greek (Modern)", "shape": "dot"}, {"color": "#97c2fc", "id": "hun", "label": "Hungarian", "shape": "dot"}, {"color": "#97c2fc", "id": "spa", "label": "Spanish", "shape": "dot"}, {"color": "#97c2fc", "id": "tur", "label": "Turkish", "shape": "dot"}, {"color": "#97c2fc", "id": "ind", "label": "Indonesian", "shape": "dot"}, {"color": "#97c2fc", "id": "mnd", "label": "Mandarin", "shape": "dot"}, {"color": "#97c2fc", "id": "jpn", "label": "Japanese", "shape": "dot"}, {"color": "#97c2fc", "id": "ame", "label": "Amele", "shape": "dot"}, {"color": "#97c2fc", "id": "geo", "label": "Georgian", "shape": "dot"}, {"color": "#97c2fc", "id": "bsq", "label": "Basque", "shape": "dot"}]);
+                  edges = new vis.DataSet([{"from": "eng", "title": "0.6106722450770822", "to": "fre", "value": 0.3729205909074839}, {"from": "eng", "title": "0.6465964333236359", "to": "ger", "value": 0.41808694758684717}, {"from": "eng", "title": "0.6285783072849596", "to": "rus", "value": 0.39511068838922503}, {"from": "eng", "title": "0.5638665319806092", "to": "fin", "value": 0.3179454658878394}, {"from": "eng", "title": "0.5423644097744084", "to": "grk", "value": 0.29415915298994233}, {"from": "eng", "title": "0.48671629907082464", "to": "hun", "value": 0.23689275578120042}, {"from": "eng", "title": "0.601061953668014", "to": "spa", "value": 0.3612754721472098}, {"from": "eng", "title": "0.36872664009663597", "to": "tur", "value": 0.13595933511695413}, {"from": "eng", "title": "0.41463442245030274", "to": "ind", "value": 0.1719217042806961}, {"from": "eng", "title": "0.44340378037715233", "to": "mnd", "value": 0.19660691245274994}, {"from": "eng", "title": "0.3670771470357889", "to": "geo", "value": 0.1347456318759342}, {"from": "eng", "title": "0.3618052033227264", "to": "bsq", "value": 0.1309030051513994}, {"from": "fre", "title": "0.6967370088618973", "to": "ger", "value": 0.4854424595178235}, {"from": "fre", "title": "0.6453574412499221", "to": "rus", "value": 0.41648622697664667}, {"from": "fre", "title": "0.5051434907072624", "to": "fin", "value": 0.2551699462039181}, {"from": "fre", "title": "0.6034246019705958", "to": "grk", "value": 0.36412125026337194}, {"from": "fre", "title": "0.40878648671553264", "to": "hun", "value": 0.16710639172122835}, {"from": "fre", "title": "0.7099004314882218", "to": "spa", "value": 0.5039586226271635}, {"from": "fre", "title": "0.42348721331014444", "to": "tur", "value": 0.1793414198371918}, {"from": "fre", "title": "0.3508581890266759", "to": "ind", "value": 0.12310146880707866}, {"from": "fre", "title": "0.401268927898934", "to": "geo", "value": 0.16101675249715988}, {"from": "fre", "title": "0.3799692693223444", "to": "bsq", "value": 0.14437664562935631}, {"from": "ger", "title": "0.6427187518094193", "to": "rus", "value": 0.4130873939274579}, {"from": "ger", "title": "0.5083425623817356", "to": "fin", "value": 0.2584121607288287}, {"from": "ger", "title": "0.601159818843422", "to": "grk", "value": 0.3613931277918559}, {"from": "ger", "title": "0.4533321982115302", "to": "hun", "value": 0.2055100819352981}, {"from": "ger", "title": "0.537945661755141", "to": "spa", "value": 0.2893855350011766}, {"from": "ger", "title": "0.37359628494483904", "to": "tur", "value": 0.13957418412458536}, {"from": "ger", "title": "0.380409516931791", "to": "geo", "value": 0.14471140057227858}, {"from": "ger", "title": "0.35958023154721175", "to": "bsq", "value": 0.1292979429195464}, {"from": "rus", "title": "0.6216206061751044", "to": "fin", "value": 0.38641217802150424}, {"from": "rus", "title": "0.7113884457678782", "to": "grk", "value": 0.5060735207720374}, {"from": "rus", "title": "0.5375814402224577", "to": "hun", "value": 0.2889938048716518}, {"from": "rus", "title": "0.6324814750383392", "to": "spa", "value": 0.40003281626667325}, {"from": "rus", "title": "0.4383648423784796", "to": "tur", "value": 0.19216373503350928}, {"from": "rus", "title": "0.3671044814684528", "to": "ind", "value": 0.1347657003142216}, {"from": "rus", "title": "0.4010677584910341", "to": "mnd", "value": 0.16085534690102246}, {"from": "rus", "title": "0.3513586461948694", "to": "jpn", "value": 0.12345289825589141}, {"from": "rus", "title": "0.4861857872355307", "to": "geo", "value": 0.2363766197098327}, {"from": "rus", "title": "0.40432261761022176", "to": "bsq", "value": 0.1634767791111816}, {"from": "fin", "title": "0.5204784521406094", "to": "grk", "value": 0.2708978191426846}, {"from": "fin", "title": "0.590615552871492", "to": "hun", "value": 0.3488267312936982}, {"from": "fin", "title": "0.5253984387258661", "to": "spa", "value": 0.2760435194155777}, {"from": "fin", "title": "0.47494992550031234", "to": "tur", "value": 0.22557743173275224}, {"from": "fin", "title": "0.37534535980628897", "to": "mnd", "value": 0.14088413912811254}, {"from": "fin", "title": "0.38976112585135536", "to": "geo", "value": 0.15191373522491608}, {"from": "fin", "title": "0.36574259387685787", "to": "bsq", "value": 0.1337676449757722}, {"from": "grk", "title": "0.5253709278635508", "to": "hun", "value": 0.2760146118442083}, {"from": "grk", "title": "0.6899762314005071", "to": "spa", "value": 0.4760671998976462}, {"from": "grk", "title": "0.414467037912919", "to": "tur", "value": 0.17178292551630903}, {"from": "grk", "title": "0.4979519986243916", "to": "geo", "value": 0.2479561929340261}, {"from": "grk", "title": "0.4252507136539468", "to": "bsq", "value": 0.18083816946319103}, {"from": "hun", "title": "0.4507827430546652", "to": "spa", "value": 0.2032050814358883}, {"from": "hun", "title": "0.4696806272838633", "to": "tur", "value": 0.2205998916457633}, {"from": "hun", "title": "0.38450489884994354", "to": "ind", "value": 0.1478440172396053}, {"from": "hun", "title": "0.3563696095248728", "to": "mnd", "value": 0.12699929859291031}, {"from": "hun", "title": "0.45129497230841514", "to": "geo", "value": 0.2036671520308532}, {"from": "hun", "title": "0.3785897498781429", "to": "bsq", "value": 0.14333019871279482}, {"from": "spa", "title": "0.3586665138409589", "to": "tur", "value": 0.12864166815082675}, {"from": "spa", "title": "0.37464855435024796", "to": "ind", "value": 0.1403615392767307}, {"from": "spa", "title": "0.38672197507230544", "to": "mnd", "value": 0.14955388600382483}, {"from": "spa", "title": "0.4641680236917234", "to": "geo", "value": 0.21545195421788027}, {"from": "spa", "title": "0.42475557124459945", "to": "bsq", "value": 0.180417295303326}, {"from": "tur", "title": "0.49358520236442915", "to": "jpn", "value": 0.24362635199313448}, {"from": "tur", "title": "0.40782058705665347", "to": "geo", "value": 0.16631763122723348}, {"from": "tur", "title": "0.453456565304503", "to": "bsq", "value": 0.205622856617757}, {"from": "ind", "title": "0.4832915622174124", "to": "mnd", "value": 0.23357073411054696}, {"from": "mnd", "title": "0.46504064816604496", "to": "jpn", "value": 0.2162628044466952}, {"from": "jpn", "title": "0.35277389163929485", "to": "bsq", "value": 0.12444941862233294}, {"from": "geo", "title": "0.4829964492786931", "to": "bsq", "value": 0.23328557001582517}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"physics": {"forceAtlas2Based": {"gravitationalConstant": -10, "centralGravity": 0.0, "springLength": 50, "springStrength": 0.15, "damping": 2.5, "avoidOverlap": 5}, "edges": {"smooth": false}, "minVelocity": 0.75, "solver": "forceAtlas2Based", "timestep": 0.35, "stabilization": {"iterations": 150}}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
